@@ -1,24 +1,22 @@
 const UP_RIGHT = -7, UP_LEFT = -9, DOWN_RIGHT = 9, DOWN_LEFT = 7;
 const WHITE_PAWN=1,WHITE_QUEEN=2,BLACK_PAWN=-1,BLACK_QUEEN=-2;
 
-var Locations = [];
 
 function playCheckers (){
-    makeBoard();
-    
+    setGame();    
 }
-
 
 /////////////Initialize checkers game////////
-function makeBoard() {
+function setGame() {
+
+    var Locations = [];
     for (let row = 0; row < 8; row++) {
-        createRowOfSquares(row);
+        createRowOfSquares(row, Locations);
     }
-    setBlackCheckersOnTop();
-    setWhiteCheckersOnBottom();
-    
+    setBlackCheckersOnTop(Locations);
+    setWhiteCheckersOnBottom(Locations);    
 }
-function setBlackCheckersOnTop() {
+function setBlackCheckersOnTop(Locations) {
 
     for (let i = 1; i < 24; i += 2) {
         Locations[i].occupant = new Checker(i, BLACK_PAWN);
@@ -26,7 +24,7 @@ function setBlackCheckersOnTop() {
         if (i === 14) { i++; }
     }
 }
-function setWhiteCheckersOnBottom() {
+function setWhiteCheckersOnBottom(Locations) {
 
     for (let i = 62; i > 39; i -= 2) {
         Locations[i].occupant = new Checker(i, WHITE_PAWN);
@@ -34,7 +32,7 @@ function setWhiteCheckersOnBottom() {
         if (i === 49) { i--; }
     }
 }
-function createRowOfSquares(row) {
+function createRowOfSquares(row, Locations) {
 
     for (let i = 0; i < 8; i++) {
         if (i % 2 !== row % 2) {
@@ -107,9 +105,8 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     this.checkerLocation = targetId; 
     targetLocation.appendChild(this.iconImage);
     
-    if (this.checkerType === WHITE_PAWN && Math.floor(targetId/8) === 0) {
-        this.coronation();
-    }
+    if (this.checkerType === WHITE_PAWN && Math.floor(targetId/8) === 0) {this.coronation();}
+    if (this.checkerType === BLACK_PAWN && Math.floor(targetId/8) === 7) {this.coronation();}
        
     if(tryRemoveKilledChecker(thisLocation.id, targetId)) {
         targetLocation.occupant.showPaths(true);
@@ -191,7 +188,6 @@ Checker.prototype.showPathOnDirection = function (direction, steps=1) {
     } 
     return false;      
 }
-
 
 Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
 
@@ -310,7 +306,6 @@ function disableOnclick (pawn, queen) {
     }
     return false;
 }
-
 function isWrapViolation (locationId, direction, steps=1) {
 
     var targetRowId = (locationId+direction*steps)%8;    
