@@ -11,22 +11,27 @@ function playCheckers (){
 function actionSelector (clickedLocationId) {    
  
     var selectedLocation = document.getElementById(clickedLocationId);
-    var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    
-    
+    var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);       
     clearCheckersHalo();
+
     if (selectedLocation.onPath){
         var checkerType = checkerLocation.occupant.checkerType;
         if (checkerLocation.occupant.moveCheckerReturnIfmoveContinues(clickedLocationId)){ 
-                    
-        } else {
-            flipTurns(checkerType);    
-        } 
-
+            selectedLocation.occupant.iconImage.setAttribute("class", "picked_piece_settings");     
+        } else { flipTurns(checkerType); } 
     }
     else if (selectedLocation.occupant) {
+        if (selectedLocation.occupant.isEatingNow === true) {
+            selectedLocation.occupant.isEatingNow = false;
+            clearPaths();
+            flipTurns(selectedLocation.occupant.checkerType);           
+        } else {
         selectedLocation.occupant.iconImage.setAttribute("class", "picked_piece_settings");
-        selectedLocation.occupant.showPaths();
-    }
+        selectedLocation.occupant.showPaths(); 
+        }
+    } else {
+        clearPaths();
+    }    
 }
 function setGame() {
 
@@ -110,7 +115,9 @@ function Checker(locationId, checkerType) {
     this.checkerLocation = locationId;
     this.checkerType = checkerType;
     var iconImage = getImageByType(checkerType);  
-    this.iconImage = iconImage;    
+    this.iconImage = iconImage;  
+    this.mustEat = false;
+    this.isEatingNow = false;  
     document.getElementById(locationId).appendChild(iconImage);  
 }
 
@@ -130,10 +137,12 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     if (this.checkerType === BLACK_PAWN && Math.floor(targetId/8) === 7) {this.coronation();}
        
     if(tryRemoveKilledChecker(thisLocation.id, targetId)) {
-        targetLocation.occupant.showPaths(true);
+        targetLocation.occupant.showQueenPaths(true);
         if (pathsAvialable()) {
-            allowOnlyPaths();
-            return true;}
+            allowOnlyPaths(this.checkerLocation);
+            this.isEatingNow = true;
+            return true;
+        }
     }
     clearPaths();
     return false;          
@@ -160,29 +169,28 @@ Checker.prototype.isDifferentColor = function (otherChecker) {
     }
     return false;
 }
-Checker.prototype.showPaths = function (showOnlyKillPaths = false) {
+Checker.prototype.showPaths = function (showOnlyKillPaths = false, markThePath = true) {
 
-    clearPaths();
     if (this.checkerType === WHITE_PAWN || this.checkerType === BLACK_PAWN) {
-        this.showPawnPaths(showOnlyKillPaths);
+        this.showPawnPaths(showOnlyKillPaths,markThePath);
     }
     if (this.checkerType === WHITE_QUEEN || this.checkerType === BLACK_QUEEN) {
-        this.showQueenPaths(showOnlyKillPaths);
+        this.showQueenPaths(showOnlyKillPaths,markThePath);
     }
 }
-Checker.prototype.showPawnPaths = function (showOnlyKillPaths) {
-    
+Checker.prototype.showPawnPaths = function (showOnlyKillPaths, markThePath) {
+    clearPaths();
     var moveRight = (this.checkerType===WHITE_PAWN)?UP_RIGHT:DOWN_RIGHT;
     var moveLeft = (this.checkerType===WHITE_PAWN)?UP_LEFT:DOWN_LEFT;    
     if (!showOnlyKillPaths) { 
-        this.showPathOnDirection(moveRight);
-        this.showPathOnDirection(moveLeft);
+        this.showPathOnDirection(moveRight,1,markThePath);
+        this.showPathOnDirection(moveLeft,1,markThePath);
     }          
-    this.showKillPathsOnDirection(moveRight);
-    this.showKillPathsOnDirection(moveLeft);        
+    this.showKillPathsOnDirection(moveRight,1, markThePath);
+    this.showKillPathsOnDirection(moveLeft,1, markThePath);        
 }
 Checker.prototype.showQueenPaths = function (showOnlyKillPaths) {
-
+    clearPaths();
     var directions = [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT];
     
     for (let i=0, steps=1; i<4; i++, steps=1) {
@@ -190,10 +198,9 @@ Checker.prototype.showQueenPaths = function (showOnlyKillPaths) {
             while (this.showPathOnDirection(directions[i],steps)) {steps++;}
         }
         this.showKillPathsOnDirection(directions[i],steps);
-    }
-  
+    }  
 }
-Checker.prototype.showPathOnDirection = function (direction, steps=1) {
+Checker.prototype.showPathOnDirection = function (direction, steps = 1, markThePath = true) {
 
     var baseLocationId = this.checkerLocation;
     if (isOutOfBoard(baseLocationId+direction*steps) || isWrapViolation(baseLocationId, direction, steps)) {
@@ -201,12 +208,12 @@ Checker.prototype.showPathOnDirection = function (direction, steps=1) {
     }        
     var targetLocaion = document.getElementById(baseLocationId+direction*steps);
     if(!(targetLocaion.occupant)) {
-        markPath(targetLocaion,this.checkerLocation);
+        if (markThePath) {markPath(targetLocaion,this.checkerLocation);}
         return true;
     } 
     return false;      
 }
-Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
+Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, markThePath = true) {
 
     var pathExists = false;
     var baseLocationId = this.checkerLocation + ((steps-1)*direction);
@@ -221,9 +228,12 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
     if (opponentLocation.occupant && this.isDifferentColor(opponentLocation.occupant)) {
         validOppenent = true;
     }
-
     if(validOppenent && targetLocation.occupant === null) {
-            markPath(targetLocation,this.checkerLocation);
+            if (markThePath) {
+                markPath(targetLocation,this.checkerLocation);
+            } else {
+                this.mustEat = true;
+            }
             pathExists = true;
         }
     return pathExists; 
@@ -257,7 +267,6 @@ function tryRemoveKilledChecker(origin, target) {
     }
     return false;
 }
-
 function clearCheckersHalo (){
     for (let i=0; i < 64; i++) {
         if (document.getElementById(i).occupant) {
@@ -267,7 +276,7 @@ function clearCheckersHalo (){
     }
 }
 function flipTurns (checkerType) {
-
+  
     if (checkerType === WHITE_PAWN || checkerType === WHITE_QUEEN) {
         disableOnclick(WHITE_PAWN, WHITE_QUEEN);
     }
@@ -283,9 +292,9 @@ function markPath (pathLocation,checkerLocation) {
     pathLocation.onPath=checkerLocation;
 }
 function clearPaths () {    
-    for (let i = 0; i < 64; i++)
+    for (let i = 1; i < 64; i++)
     {
-        if (document.getElementById(i).onPath) {
+       if (document.getElementById(i).onPath) {
             document.getElementById(i).onPath = false;
             document.getElementById(i).style.backgroundColor = "peru";
         }
@@ -311,10 +320,9 @@ function disableOnclick (pawn, queen) {
             document.getElementById(i).style.pointerEvents = "none";
         }
     }
-    return false;
 }
-function allowOnlyPaths () {
-    var checker;
+function allowOnlyPaths (me) {
+
     for (let i=0; i < 64; i++)
     {
         document.getElementById(i).style.pointerEvents = "none";
@@ -322,6 +330,7 @@ function allowOnlyPaths () {
             document.getElementById(i).style.pointerEvents = "auto";           
         }
     }
+    document.getElementById(me).style.pointerEvents = "auto"; 
 }
 function isWrapViolation (locationId, direction, steps=1) {
 
@@ -331,6 +340,19 @@ function isWrapViolation (locationId, direction, steps=1) {
     }
     return true;
     
+}
+function checkMustEat () {
+
+    for (let i = 0; i < 64; i++) {
+        var checker = document.getElementById(i).occupant;
+        if (checker) {
+            checker.showPaths(false,false);
+            console.log(i, checker.mustEat);
+            if (checker.mustEat === true) {
+                checker.iconImage.setAttribute("class", "must_eat");     
+            }
+        }
+    }
 }
 
 
@@ -345,7 +367,7 @@ function isWrapViolation (locationId, direction, steps=1) {
 
 function tempFunc1(){
     
-    alert(pathsAvialable());
+   checkMustEat();
 }
 function tempFunc() {
     
@@ -356,11 +378,11 @@ function tempFunc() {
         x = document.getElementById(i);
         if (document.getElementById(i).occupant)
         {           
-            a=document.getElementById(i).onPath;
+            document.getElementById(i).occupant.showPaths(false,false);
+            x.innerHTML = document.getElementById(i).occupant.mustEat;
         }
         else{
-            a=document.getElementById(i).onPath;
+            a=0;
         }
-        x.innerHTML = a;
     }
 }
