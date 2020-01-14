@@ -1,5 +1,6 @@
 const UP_RIGHT = -7, UP_LEFT = -9, DOWN_RIGHT = 9, DOWN_LEFT = 7;
 const WHITE_PAWN=1,WHITE_QUEEN=2,BLACK_PAWN=-1,BLACK_QUEEN=-2;
+const WHITE=10, BLACK=-10;
 
 
 function playCheckers (){
@@ -11,23 +12,23 @@ function playCheckers (){
 function actionSelector (clickedLocationId) {    
  
     var selectedLocation = document.getElementById(clickedLocationId);
-    var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);       
-    clearCheckersHalo();
+    var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    
+    clearCheckerPropeties();
 
-    if (selectedLocation.onPath){
-        var checkerType = checkerLocation.occupant.checkerType;
+    if (selectedLocation.onPath){     
+        var checkerColor = checkerLocation.occupant.checkerColor;      
         if (checkerLocation.occupant.moveCheckerReturnIfmoveContinues(clickedLocationId)){ 
             selectedLocation.occupant.iconImage.setAttribute("class", "picked_piece_settings");     
-        } else { flipTurns(checkerType); } 
+        } else { turnIsOverFor(checkerColor); } 
     }
     else if (selectedLocation.occupant) {
         if (selectedLocation.occupant.isEatingNow === true) {
             selectedLocation.occupant.isEatingNow = false;
             clearPaths();
-            flipTurns(selectedLocation.occupant.checkerType);           
+            turnIsOverFor(selectedLocation.occupant.checkerColor);           
         } else {
         selectedLocation.occupant.iconImage.setAttribute("class", "picked_piece_settings");
-        selectedLocation.occupant.showPaths(); 
+        selectedLocation.occupant.showPaths();         
         }
     } else {
         clearPaths();
@@ -109,18 +110,17 @@ function getImageByType (checkerType) {
     iconImage.setAttribute("class", "piece_settings");
     return iconImage;
 }
-
 function Checker(locationId, checkerType) {
 
     this.checkerLocation = locationId;
     this.checkerType = checkerType;
+    this.checkerColor = (checkerType===WHITE_PAWN || checkerType===WHITE_QUEEN)?WHITE:BLACK;
     var iconImage = getImageByType(checkerType);  
     this.iconImage = iconImage;  
     this.mustEat = false;
     this.isEatingNow = false;  
     document.getElementById(locationId).appendChild(iconImage);  
 }
-
 Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
 
     var thisLocation = document.getElementById(this.checkerLocation);
@@ -159,14 +159,9 @@ Checker.prototype.coronation = function() {
 }
 Checker.prototype.isDifferentColor = function (otherChecker) {    
 
-    if ((this.checkerType===WHITE_PAWN || this.checkerType===WHITE_QUEEN)&&
-    (otherChecker.checkerType===BLACK_PAWN || otherChecker.checkerType===BLACK_QUEEN)){
-        return true;
-    }
-    if ((this.checkerType===BLACK_PAWN || this.checkerType===BLACK_QUEEN)&&
-    (otherChecker.checkerType===WHITE_PAWN || otherChecker.checkerType===WHITE_QUEEN)){
-        return true;
-    }
+    if ((this.checkerColor===WHITE) && (otherChecker.checkerColor===BLACK)) { return true; }    
+    if ((this.checkerColor===BLACK) && (otherChecker.checkerColor===WHITE)) { return true; }
+
     return false;
 }
 Checker.prototype.showPaths = function (showOnlyKillPaths = false, markThePath = true) {
@@ -267,21 +262,14 @@ function tryRemoveKilledChecker(origin, target) {
     }
     return false;
 }
-function clearCheckersHalo (){
+function clearCheckerPropeties (){
+    
     for (let i=0; i < 64; i++) {
-        if (document.getElementById(i).occupant) {
-            document.getElementById(i).occupant.iconImage.setAttribute("class", "piece_settings");
+        var checker = document.getElementById(i).occupant;
+        if (checker) {
+            checker.iconImage.setAttribute("class", "piece_settings");
+            checker.mustEat = false;
         }
-
-    }
-}
-function flipTurns (checkerType) {
-  
-    if (checkerType === WHITE_PAWN || checkerType === WHITE_QUEEN) {
-        disableOnclick(WHITE_PAWN, WHITE_QUEEN);
-    }
-    if (checkerType === BLACK_PAWN || checkerType === BLACK_QUEEN) {
-        disableOnclick(BLACK_PAWN, BLACK_QUEEN);
     }
 }
 function isOutOfBoard (id) {
@@ -309,17 +297,17 @@ function pathsAvialable () {
     }
     return false;
 }
-function disableOnclick (pawn, queen) {
+function turnIsOverFor (color) {
 
-    var checker;
     for (let i=0; i < 64; i++)
     {
-        checker=document.getElementById(i).occupant;
+        var checker=document.getElementById(i).occupant;
         document.getElementById(i).style.pointerEvents = "auto";
-        if (checker && (checker.checkerType === pawn || checker.checkerType === queen)) {
+        if (checker && (checker.checkerColor === color)) {
             document.getElementById(i).style.pointerEvents = "none";
         }
     }
+    checkMustEat (-color);
 }
 function allowOnlyPaths (me) {
 
@@ -341,13 +329,12 @@ function isWrapViolation (locationId, direction, steps=1) {
     return true;
     
 }
-function checkMustEat () {
+function checkMustEat (color) {
 
     for (let i = 0; i < 64; i++) {
         var checker = document.getElementById(i).occupant;
-        if (checker) {
+        if (checker && checker.checkerColor === color) {
             checker.showPaths(false,false);
-            console.log(i, checker.mustEat);
             if (checker.mustEat === true) {
                 checker.iconImage.setAttribute("class", "must_eat");     
             }
@@ -367,7 +354,7 @@ function checkMustEat () {
 
 function tempFunc1(){
     
-   checkMustEat();
+   checkMustEat(WHITE);
 }
 function tempFunc() {
     
