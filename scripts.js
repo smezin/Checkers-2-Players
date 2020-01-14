@@ -7,6 +7,27 @@ function playCheckers (){
 }
 
 /////////////Initialize checkers game////////
+
+function actionSelector (clickedLocationId) {    
+ 
+    var selectedLocation = document.getElementById(clickedLocationId);
+    var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    
+    
+    clearCheckersHalo();
+    if (selectedLocation.onPath){
+        var checkerType = checkerLocation.occupant.checkerType;
+        if (checkerLocation.occupant.moveCheckerReturnIfmoveContinues(clickedLocationId)){ 
+                    
+        } else {
+            flipTurns(checkerType);    
+        } 
+
+    }
+    else if (selectedLocation.occupant) {
+        selectedLocation.occupant.iconImage.setAttribute("class", "picked_piece_settings");
+        selectedLocation.occupant.showPaths();
+    }
+}
 function setGame() {
 
     var Locations = [];
@@ -87,7 +108,7 @@ function getImageByType (checkerType) {
 function Checker(locationId, checkerType) {
 
     this.checkerLocation = locationId;
-    this.checkerType=checkerType;
+    this.checkerType = checkerType;
     var iconImage = getImageByType(checkerType);  
     this.iconImage = iconImage;    
     document.getElementById(locationId).appendChild(iconImage);  
@@ -110,7 +131,9 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
        
     if(tryRemoveKilledChecker(thisLocation.id, targetId)) {
         targetLocation.occupant.showPaths(true);
-        if (pathsAvialable()) {return true;}
+        if (pathsAvialable()) {
+            allowOnlyPaths();
+            return true;}
     }
     clearPaths();
     return false;          
@@ -189,13 +212,11 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
     var baseLocationId = this.checkerLocation + ((steps-1)*direction);
 
     if (isOutOfBoard(baseLocationId + 2*direction) || isWrapViolation(baseLocationId, direction) 
-    || isWrapViolation(baseLocationId, direction,2)){
+    || isWrapViolation(baseLocationId, direction, 2)){
         return false;
     }    
-    //var baseLocation = document.getElementById(baseLocationId);
     var opponentLocation = document.getElementById(baseLocationId + direction);
-    var targetLocation = document.getElementById(baseLocationId + direction*2);
-    
+    var targetLocation = document.getElementById(baseLocationId + direction*2); 
     var validOppenent;
     if (opponentLocation.occupant && this.isDifferentColor(opponentLocation.occupant)) {
         validOppenent = true;
@@ -236,30 +257,23 @@ function tryRemoveKilledChecker(origin, target) {
     }
     return false;
 }
-function actionSelector (clickedLocationId) {    
- 
-    var selectedLocation = document.getElementById(clickedLocationId);
-    var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    
-    
-    if (selectedLocation.onPath){
-        var checkerType = checkerLocation.occupant.checkerType;
-        if (!checkerLocation.occupant.moveCheckerReturnIfmoveContinues(clickedLocationId)){ 
-            flipTurns(checkerType);            
-        }         
-    }
-    else if (selectedLocation.occupant) {
-        selectedLocation.occupant.showPaths();
+
+function clearCheckersHalo (){
+    for (let i=0; i < 64; i++) {
+        if (document.getElementById(i).occupant) {
+            document.getElementById(i).occupant.iconImage.setAttribute("class", "piece_settings");
+        }
+
     }
 }
 function flipTurns (checkerType) {
-  //  return;
+
     if (checkerType === WHITE_PAWN || checkerType === WHITE_QUEEN) {
         disableOnclick(WHITE_PAWN, WHITE_QUEEN);
     }
     if (checkerType === BLACK_PAWN || checkerType === BLACK_QUEEN) {
         disableOnclick(BLACK_PAWN, BLACK_QUEEN);
     }
-
 }
 function isOutOfBoard (id) {
     return (id < 0 || id > 63);
@@ -298,6 +312,16 @@ function disableOnclick (pawn, queen) {
         }
     }
     return false;
+}
+function allowOnlyPaths () {
+    var checker;
+    for (let i=0; i < 64; i++)
+    {
+        document.getElementById(i).style.pointerEvents = "none";
+        if (document.getElementById(i).onPath) {
+            document.getElementById(i).style.pointerEvents = "auto";           
+        }
+    }
 }
 function isWrapViolation (locationId, direction, steps=1) {
 
