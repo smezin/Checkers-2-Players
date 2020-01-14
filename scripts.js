@@ -52,7 +52,7 @@ function createLocation(id, squareColor) {
     locationDiv.setAttribute("class", "locationClass");
     locationDiv.style.background = squareColor;
     locationDiv.id = id; 
-    locationDiv.occupant = undefined;
+    locationDiv.occupant = null;
     locationDiv.onPath = false;
     locationDiv.onclick=function()    {actionSelector(id);    }  
 
@@ -98,7 +98,7 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     var thisLocation = document.getElementById(this.checkerLocation);
     var targetLocation = document.getElementById(targetId);
     
-    thisLocation.occupant = undefined;
+    thisLocation.occupant = null;
     thisLocation.removeChild(thisLocation.firstChild);    
   
     targetLocation.occupant = this;
@@ -115,18 +115,16 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     clearPaths();
     return false;          
 }
-
 Checker.prototype.coronation = function() {
 
     var thisLocation = document.getElementById(this.checkerLocation);
     var checkerType;
     if (this.checkerType === WHITE_PAWN) {checkerType = WHITE_QUEEN;}
     if (this.checkerType === BLACK_PAWN) {checkerType = BLACK_QUEEN;}
-    thisLocation.occupant = undefined;
+    thisLocation.occupant = null;
     thisLocation.removeChild(thisLocation.firstChild);
     thisLocation.occupant=new Checker (this.checkerLocation, checkerType);
 }
-
 Checker.prototype.isDifferentColor = function (otherChecker) {    
 
     if ((this.checkerType===WHITE_PAWN || this.checkerType===WHITE_QUEEN)&&
@@ -139,7 +137,6 @@ Checker.prototype.isDifferentColor = function (otherChecker) {
     }
     return false;
 }
-
 Checker.prototype.showPaths = function (showOnlyKillPaths = false) {
 
     clearPaths();
@@ -161,7 +158,6 @@ Checker.prototype.showPawnPaths = function (showOnlyKillPaths) {
     this.showKillPathsOnDirection(moveRight);
     this.showKillPathsOnDirection(moveLeft);        
 }
-
 Checker.prototype.showQueenPaths = function (showOnlyKillPaths) {
 
     var directions = [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT];
@@ -174,7 +170,6 @@ Checker.prototype.showQueenPaths = function (showOnlyKillPaths) {
     }
   
 }
-
 Checker.prototype.showPathOnDirection = function (direction, steps=1) {
 
     var baseLocationId = this.checkerLocation;
@@ -188,7 +183,6 @@ Checker.prototype.showPathOnDirection = function (direction, steps=1) {
     } 
     return false;      
 }
-
 Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
 
     var pathExists = false;
@@ -198,7 +192,7 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
     || isWrapViolation(baseLocationId, direction,2)){
         return false;
     }    
-    var baseLocation = document.getElementById(baseLocationId);
+    //var baseLocation = document.getElementById(baseLocationId);
     var opponentLocation = document.getElementById(baseLocationId + direction);
     var targetLocation = document.getElementById(baseLocationId + direction*2);
     
@@ -207,13 +201,12 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps=1) {
         validOppenent = true;
     }
 
-    if(validOppenent && targetLocation.occupant === undefined) {
+    if(validOppenent && targetLocation.occupant === null) {
             markPath(targetLocation,this.checkerLocation);
             pathExists = true;
         }
     return pathExists; 
 }
-
 function tryRemoveKilledChecker(origin, target) {
 
     var stepRetrace = target-origin;
@@ -237,7 +230,7 @@ function tryRemoveKilledChecker(origin, target) {
     }    
     var killLocation = document.getElementById(target-stepRetrace);
     if (killLocation.occupant) {
-        killLocation.occupant = undefined;       
+        killLocation.occupant = null;       
         killLocation.removeChild(killLocation.firstChild); 
         return true;      
     }
