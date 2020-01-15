@@ -1,6 +1,5 @@
 const UP_RIGHT = -7, UP_LEFT = -9, DOWN_RIGHT = 9, DOWN_LEFT = 7;
-const WHITE_PAWN=1,WHITE_QUEEN=2,BLACK_PAWN=-1,BLACK_QUEEN=-2;
-const WHITE=10, BLACK=-10;
+const WHITE=10, BLACK=-10, PAWN = 1, QUEEN = 2;
 
 
 function playCheckers (){
@@ -46,7 +45,7 @@ function setGame() {
 function setBlackCheckersOnTop(Locations) {
 
     for (let i = 1; i < 24; i += 2) {
-        Locations[i].occupant = new Checker(i, BLACK_PAWN);
+        Locations[i].occupant = new Checker(i, BLACK, PAWN);
         if (i === 7) { i--; }
         if (i === 14) { i++; }
     }
@@ -54,7 +53,7 @@ function setBlackCheckersOnTop(Locations) {
 function setWhiteCheckersOnBottom(Locations) {
 
     for (let i = 62; i > 39; i -= 2) {
-        Locations[i].occupant = new Checker(i, WHITE_PAWN);
+        Locations[i].occupant = new Checker(i, WHITE, PAWN);
         if (i === 56) { i++; }
         if (i === 49) { i--; }
     }
@@ -92,16 +91,16 @@ function getImageByType (checkerType) {
 
     var  iconImage = document.createElement("img");
     switch (checkerType) {
-        case WHITE_PAWN:
+        case WHITE+PAWN:
             iconImage.setAttribute("src","images/white_man.png"); 
             break;
-        case WHITE_QUEEN:
+        case WHITE+QUEEN:
             iconImage.setAttribute("src","images/white_queen.png"); 
             break;
-        case BLACK_PAWN:
+        case BLACK+PAWN:
             iconImage.setAttribute("src", "images/black_man.png");      
             break;
-        case BLACK_QUEEN:
+        case BLACK+QUEEN:
             iconImage.setAttribute("src", "images/black_queen.png");      
             break;    
         default:
@@ -110,17 +109,19 @@ function getImageByType (checkerType) {
     iconImage.setAttribute("class", "piece_settings");
     return iconImage;
 }
-function Checker(locationId, checkerType) {
+function Checker(locationId, checkerColor, checkerRank) {
 
     this.checkerLocation = locationId;
-    this.checkerType = checkerType;
-    this.checkerColor = (checkerType===WHITE_PAWN || checkerType===WHITE_QUEEN)?WHITE:BLACK;
-    var iconImage = getImageByType(checkerType);  
+    this.checkerColor = checkerColor;
+    this.checkerRank = checkerRank;
+    this.checkerType = checkerColor+checkerRank;
+    var iconImage = getImageByType(checkerColor+checkerRank);  
     this.iconImage = iconImage;  
     this.mustEat = false;
     this.isEatingNow = false;  
     document.getElementById(locationId).appendChild(iconImage);  
 }
+
 Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
 
     var thisLocation = document.getElementById(this.checkerLocation);
@@ -133,13 +134,13 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     this.checkerLocation = targetId; 
     targetLocation.appendChild(this.iconImage);
     
-    if (this.checkerType === WHITE_PAWN && Math.floor(targetId/8) === 0) {this.coronation();}
-    if (this.checkerType === BLACK_PAWN && Math.floor(targetId/8) === 7) {this.coronation();}
+    if (this.checkerType === (WHITE+PAWN) && Math.floor(targetId/8) === 0) {this.coronation();}
+    if (this.checkerType === (BLACK+PAWN) && Math.floor(targetId/8) === 7) {this.coronation();}
        
     if(tryRemoveKilledChecker(thisLocation.id, targetId)) {
-        targetLocation.occupant.showQueenPaths(true);
+        targetLocation.occupant.showPaths(true,true,true);
         if (pathsAvialable()) {
-            allowOnlyPaths(this.checkerLocation);
+            this.allowOnlyPathsAndThis();
             this.isEatingNow = true;
             return true;
         }
@@ -150,12 +151,9 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
 Checker.prototype.coronation = function() {
 
     var thisLocation = document.getElementById(this.checkerLocation);
-    var checkerType;
-    if (this.checkerType === WHITE_PAWN) {checkerType = WHITE_QUEEN;}
-    if (this.checkerType === BLACK_PAWN) {checkerType = BLACK_QUEEN;}
     thisLocation.occupant = null;
     thisLocation.removeChild(thisLocation.firstChild);
-    thisLocation.occupant=new Checker (this.checkerLocation, checkerType);
+    thisLocation.occupant=new Checker (this.checkerLocation, this.checkerColor, QUEEN);
 }
 Checker.prototype.isDifferentColor = function (otherChecker) {    
 
@@ -164,37 +162,26 @@ Checker.prototype.isDifferentColor = function (otherChecker) {
 
     return false;
 }
-Checker.prototype.showPaths = function (showOnlyKillPaths = false, markThePath = true) {
 
-    if (this.checkerType === WHITE_PAWN || this.checkerType === BLACK_PAWN) {
-        this.showPawnPaths(showOnlyKillPaths,markThePath);
-    }
-    if (this.checkerType === WHITE_QUEEN || this.checkerType === BLACK_QUEEN) {
-        this.showQueenPaths(showOnlyKillPaths,markThePath);
-    }
-}
-Checker.prototype.showPawnPaths = function (showOnlyKillPaths, markThePath) {
+Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = true, eatsNow = false) {
     clearPaths();
-    var moveRight = (this.checkerType===WHITE_PAWN)?UP_RIGHT:DOWN_RIGHT;
-    var moveLeft = (this.checkerType===WHITE_PAWN)?UP_LEFT:DOWN_LEFT;    
-    if (!showOnlyKillPaths) { 
-        this.showPathOnDirection(moveRight,1,markThePath);
-        this.showPathOnDirection(moveLeft,1,markThePath);
-    }          
-    this.showKillPathsOnDirection(moveRight,1, markThePath);
-    this.showKillPathsOnDirection(moveLeft,1, markThePath);        
-}
-Checker.prototype.showQueenPaths = function (showOnlyKillPaths) {
-    clearPaths();
-    var directions = [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT];
-    
-    for (let i=0, steps=1; i<4; i++, steps=1) {
+    var queen = false;
+    if (this.checkerRank === PAWN && !eatsNow){
+        var moveRight = (this.checkerColor === WHITE)?UP_RIGHT:DOWN_RIGHT;
+        var moveLeft = (this.checkerTColor === WHITE)?UP_LEFT:DOWN_LEFT; 
+        var directions = [moveRight, moveLeft];
+    } else {
+        var directions = [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT];
+        queen = true;
+    }
+    for (let i=0, steps=1; i<directions.length; i++, steps=1) {
         if (!showOnlyKillPaths) {
-            while (this.showPathOnDirection(directions[i],steps)) {steps++;}
+            while (this.showPathOnDirection(directions[i],steps, markPath) && queen) {steps++;}
         }
-        this.showKillPathsOnDirection(directions[i],steps);
-    }  
+        this.showKillPathsOnDirection(directions[i],steps, markPath);
+    } 
 }
+
 Checker.prototype.showPathOnDirection = function (direction, steps = 1, markThePath = true) {
 
     var baseLocationId = this.checkerLocation;
@@ -309,16 +296,15 @@ function turnIsOverFor (color) {
     }
     checkMustEat (-color);
 }
-function allowOnlyPaths (me) {
+Checker.prototype.allowOnlyPathsAndThis = function() {
 
-    for (let i=0; i < 64; i++)
-    {
+    for (let i=0; i < 64; i++) {
         document.getElementById(i).style.pointerEvents = "none";
         if (document.getElementById(i).onPath) {
             document.getElementById(i).style.pointerEvents = "auto";           
         }
     }
-    document.getElementById(me).style.pointerEvents = "auto"; 
+    document.getElementById(this.checkerLocation).style.pointerEvents = "auto"; 
 }
 function isWrapViolation (locationId, direction, steps=1) {
 
@@ -326,8 +312,7 @@ function isWrapViolation (locationId, direction, steps=1) {
     if (targetRowId !== (( direction === UP_RIGHT  || direction === DOWN_RIGHT )?0:7)){ 
         return false;       
     }
-    return true;
-    
+    return true;    
 }
 function checkMustEat (color) {
 
