@@ -114,7 +114,7 @@ function Checker(locationId, checkerColor, checkerRank) {
     this.checkerLocation = locationId;
     this.checkerColor = checkerColor;
     this.checkerRank = checkerRank;
-    this.checkerType = checkerColor+checkerRank;
+    this.checkerType = checkerColor + checkerRank;
     var iconImage = getImageByType(checkerColor+checkerRank);  
     this.iconImage = iconImage;  
     this.mustEat = false;
@@ -159,16 +159,14 @@ Checker.prototype.isDifferentColor = function (otherChecker) {
 
     if ((this.checkerColor===WHITE) && (otherChecker.checkerColor===BLACK)) { return true; }    
     if ((this.checkerColor===BLACK) && (otherChecker.checkerColor===WHITE)) { return true; }
-
     return false;
 }
-
 Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = true, eatsNow = false) {
     clearPaths();
     var queen = false;
     if (this.checkerRank === PAWN && !eatsNow){
         var moveRight = (this.checkerColor === WHITE)?UP_RIGHT:DOWN_RIGHT;
-        var moveLeft = (this.checkerTColor === WHITE)?UP_LEFT:DOWN_LEFT; 
+        var moveLeft = (this.checkerColor === WHITE)?UP_LEFT:DOWN_LEFT; 
         var directions = [moveRight, moveLeft];
     } else {
         var directions = [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT];
@@ -181,7 +179,6 @@ Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = tr
         this.showKillPathsOnDirection(directions[i],steps, markPath);
     } 
 }
-
 Checker.prototype.showPathOnDirection = function (direction, steps = 1, markThePath = true) {
 
     var baseLocationId = this.checkerLocation;
@@ -219,6 +216,16 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, mar
             pathExists = true;
         }
     return pathExists; 
+}
+Checker.prototype.allowOnlyPathsAndThis = function() {
+
+    for (let i=0; i < 64; i++) {
+        document.getElementById(i).style.pointerEvents = "none";
+        if (document.getElementById(i).onPath) {
+            document.getElementById(i).style.pointerEvents = "auto";           
+        }
+    }
+    document.getElementById(this.checkerLocation).style.pointerEvents = "auto"; 
 }
 function tryRemoveKilledChecker(origin, target) {
 
@@ -295,16 +302,6 @@ function turnIsOverFor (color) {
         }
     }
     checkMustEat (-color);
-}
-Checker.prototype.allowOnlyPathsAndThis = function() {
-
-    for (let i=0; i < 64; i++) {
-        document.getElementById(i).style.pointerEvents = "none";
-        if (document.getElementById(i).onPath) {
-            document.getElementById(i).style.pointerEvents = "auto";           
-        }
-    }
-    document.getElementById(this.checkerLocation).style.pointerEvents = "auto"; 
 }
 function isWrapViolation (locationId, direction, steps=1) {
 
