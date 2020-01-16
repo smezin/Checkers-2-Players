@@ -5,40 +5,6 @@ const WHITE=10, BLACK=-10, PAWN = 1, QUEEN = 2;
 function playCheckers (){
     setGame();    
 }
-function Checker(locationId, color, rank) {
-
-    this.checkerId = locationId;
-    this.color = color;
-    this.rank = rank;
-    this.checkerType = color + rank;
-    var iconImage = getImageByType(color+rank);  
-    this.iconImage = iconImage;  
-    this.mustEat = false;
-    this.isEatingNow = false;  
-    document.getElementById(locationId).appendChild(iconImage);  
-}
-function getImageByType (checkerType) {
-
-    var  iconImage = document.createElement("img");
-    switch (checkerType) {
-        case WHITE+PAWN:
-            iconImage.setAttribute("src","images/white_man.png"); 
-            break;
-        case WHITE+QUEEN:
-            iconImage.setAttribute("src","images/white_queen.png"); 
-            break;
-        case BLACK+PAWN:
-            iconImage.setAttribute("src", "images/black_man.png");      
-            break;
-        case BLACK+QUEEN:
-            iconImage.setAttribute("src", "images/black_queen.png");      
-            break;    
-        default:
-            break;    
-        }
-    iconImage.setAttribute("class", "piece_settings");
-    return iconImage;
-}
 function actionSelector (clickedLocationId) {    
     var selectedLocation = document.getElementById(clickedLocationId);
     var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    

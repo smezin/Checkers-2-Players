@@ -1,12 +1,46 @@
-//Initializing game board, setting checkers
+
 function setGame() {
 
     var Locations = [];
     for (let row = 0; row < 8; row++) {
         createRowOfSquares(row, Locations);
-    }
-    setBlackCheckersOnTop(Locations);
+    } 
     setWhiteCheckersOnBottom(Locations);    
+    setBlackCheckersOnTop(Locations);
+}
+function Checker(locationId, color, rank) {
+
+    this.checkerId = locationId;
+    this.color = color;
+    this.rank = rank;
+    this.checkerType = color + rank;
+    var iconImage = getImageByType(color+rank);  
+    this.iconImage = iconImage;  
+    this.mustEat = false;
+    this.isEatingNow = false;  
+    document.getElementById(locationId).appendChild(iconImage);  
+}
+function getImageByType (checkerType) {
+
+    var  iconImage = document.createElement("img");
+    switch (checkerType) {
+        case WHITE+PAWN:
+            iconImage.setAttribute("src","images/white_man.png"); 
+            break;
+        case WHITE+QUEEN:
+            iconImage.setAttribute("src","images/white_queen.png"); 
+            break;
+        case BLACK+PAWN:
+            iconImage.setAttribute("src", "images/black_man.png");      
+            break;
+        case BLACK+QUEEN:
+            iconImage.setAttribute("src", "images/black_queen.png");      
+            break;    
+        default:
+            break;    
+        }
+    iconImage.setAttribute("class", "piece_settings");
+    return iconImage;
 }
 function setBlackCheckersOnTop(Locations) {
 
