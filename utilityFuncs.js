@@ -16,7 +16,7 @@ function clearPaths () {
 }
 function isPathAvialable () {
     for (let i = 0; i < 64; i++) {
-        if (document.getElementById(i).onPath) {
+        if (document.getElementById(i).onPath) { 
             return true;
         }
     }

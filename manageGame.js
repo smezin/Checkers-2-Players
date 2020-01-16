@@ -39,7 +39,6 @@ function getImageByType (checkerType) {
     iconImage.setAttribute("class", "piece_settings");
     return iconImage;
 }
-
 function actionSelector (clickedLocationId) {    
     var selectedLocation = document.getElementById(clickedLocationId);
     var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    
@@ -77,7 +76,6 @@ function updateDrawMovesCount (checker, didEat) {
         localStorage.setItem("drawMovesCount", counter);
     }
 }
-
 function turnIsOverFor (color) {
 
     for (let i=0; i < 64; i++)
@@ -90,13 +88,11 @@ function turnIsOverFor (color) {
     }
     setMustEat (-color);
 }
-
 function isGameOver (color) {
     var gameOn = false;
-    //no legal moves
-    //no checkers
+   
     if (localStorage.getItem("drawMovesCount") == "15") {
-        console.log("TIE");
+        alert("It's a draw");
     }
     for (let i = 0; i < 64; i++) {
         let checker = document.getElementById(i).occupant;
@@ -105,6 +101,6 @@ function isGameOver (color) {
                 gameOn = true;
             }           
         }
-    console.log(color +"WON  " + !gameOn);
+    if (!gameOn) { alert ((color === WHITE ?"WHITE":"BLACK") + " PLAYER WON");}
     return gameOn;
 }
