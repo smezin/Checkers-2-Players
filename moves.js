@@ -1,3 +1,4 @@
+
 Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
 
     var thisLocation = document.getElementById(this.checkerId);

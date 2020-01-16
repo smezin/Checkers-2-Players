@@ -1,3 +1,4 @@
+
 Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = true, eatsNow = false) {
     clearPaths();
     var isPath = false;
@@ -65,4 +66,8 @@ Checker.prototype.allowOnlyPathsAndThis = function() {
         }
     }
     document.getElementById(this.checkerId).style.pointerEvents = "auto"; 
+}
+function markPath (pathLocation,checkerId) {
+    pathLocation.style.backgroundColor = "saddlebrown";
+    pathLocation.onPath=checkerId;
 }

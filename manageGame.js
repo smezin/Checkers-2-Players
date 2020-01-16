@@ -1,4 +1,4 @@
-//Game management
+
 const UP_RIGHT = -7, UP_LEFT = -9, DOWN_RIGHT = 9, DOWN_LEFT = 7;
 const WHITE=10, BLACK=-10, PAWN = 1, QUEEN = 2;
 

@@ -22,10 +22,6 @@ function isPathAvialable () {
     }
     return false;
 }
-function markPath (pathLocation,checkerId) {
-    pathLocation.style.backgroundColor = "saddlebrown";
-    pathLocation.onPath=checkerId;
-}
 function isWrapViolation (locationId, direction, steps=1) {
 
     var targetRowId = (locationId+direction*steps)%8;    
