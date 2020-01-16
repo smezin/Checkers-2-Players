@@ -1,3 +1,4 @@
+//Initializing game board, setting checkers
 function setGame() {
 
     var Locations = [];

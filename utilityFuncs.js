@@ -1,8 +1,8 @@
 //Utility functions 
 Checker.prototype.isDifferentColor = function (otherChecker) {    
 
-    if ((this.checkerColor===WHITE) && (otherChecker.checkerColor===BLACK)) { return true; }    
-    if ((this.checkerColor===BLACK) && (otherChecker.checkerColor===WHITE)) { return true; }
+    if ((this.color===WHITE) && (otherChecker.color===BLACK)) { return true; }    
+    if ((this.color===BLACK) && (otherChecker.color===WHITE)) { return true; }
     return false;
 }
 function clearPaths () {    
@@ -15,8 +15,7 @@ function clearPaths () {
     }
 }
 function isPathAvialable () {
-    for (let i=0; i < 64; i++)
-    {
+    for (let i = 0; i < 64; i++) {
         if (document.getElementById(i).onPath) {
             return true;
         }
@@ -27,7 +26,6 @@ function markPath (pathLocation,checkerId) {
     pathLocation.style.backgroundColor = "saddlebrown";
     pathLocation.onPath=checkerId;
 }
-
 function isWrapViolation (locationId, direction, steps=1) {
 
     var targetRowId = (locationId+direction*steps)%8;    
@@ -40,7 +38,7 @@ function setMustEat (color) {
 
     for (let i = 0; i < 64; i++) {
         var checker = document.getElementById(i).occupant;
-        if (checker && checker.checkerColor === color) {
+        if (checker && checker.color === color) {
             checker.showPaths(false,false);
             if (checker.mustEat === true) {
                 checker.iconImage.setAttribute("class", "must_eat");     
@@ -60,16 +58,4 @@ function clearCheckerPropeties (){
 }
 function isOutOfBoard (id) {
     return (id < 0 || id > 63);
-}
-function turnIsOverFor (color) {
-
-    for (let i=0; i < 64; i++)
-    {
-        var checker=document.getElementById(i).occupant;
-        document.getElementById(i).style.pointerEvents = "auto";
-        if (checker && (checker.checkerColor === color)) {
-            document.getElementById(i).style.pointerEvents = "none";
-        }
-    }
-    setMustEat (-color);
 }

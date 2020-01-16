@@ -2,21 +2,23 @@
 
 Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = true, eatsNow = false) {
     clearPaths();
-    var isQueen = false;
-    if (this.checkerRank === PAWN && !eatsNow){
-        var moveRight = (this.checkerColor === WHITE)?UP_RIGHT:DOWN_RIGHT;
-        var moveLeft = (this.checkerColor === WHITE)?UP_LEFT:DOWN_LEFT; 
+    var isPath = false;
+    if (this.rank === PAWN && !eatsNow){
+        var moveRight = (this.color === WHITE)?UP_RIGHT:DOWN_RIGHT;
+        var moveLeft = (this.color === WHITE)?UP_LEFT:DOWN_LEFT; 
         var directions = [moveRight, moveLeft];
     } else {
         var directions = [UP_RIGHT, UP_LEFT, DOWN_RIGHT, DOWN_LEFT];
-        isQueen = true;
     }
     for (let i = 0, steps = 1; i < directions.length; i++, steps = 1) {
         if (!showOnlyKillPaths) {
-            while (this.showPathOnDirection(directions[i],steps, markPath) && isQueen) {steps++;}
-        }
-        this.showKillPathsOnDirection(directions[i],steps, markPath);
+            isPath = (this.showPathOnDirection(directions[i],steps, markPath) || isPath)
+            while (this.showPathOnDirection(directions[i],steps, markPath) && this.rank === QUEEN) {steps++;}
+                
+        }       
+        isPath = (this.showKillPathsOnDirection(directions[i],steps, markPath) || isPath);
     } 
+    return isPath;
 }
 Checker.prototype.showPathOnDirection = function (direction, steps = 1, markThePath = true) {
 
@@ -126,5 +128,5 @@ Checker.prototype.coronation = function() {
     var thisLocation = document.getElementById(this.checkerId);
     thisLocation.occupant = null;
     thisLocation.removeChild(thisLocation.firstChild);
-    thisLocation.occupant=new Checker (this.checkerId, this.checkerColor, QUEEN);
+    thisLocation.occupant=new Checker (this.checkerId, this.color, QUEEN);
 }
