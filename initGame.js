@@ -39,7 +39,7 @@ function getImageByType (checkerType) {
         default:
             break;    
         }
-    iconImage.setAttribute("class", "piece_settings");
+    iconImage.setAttribute("class", "piece");
     return iconImage;
 }
 function setWhiteCheckersOnBottom(Locations) {
@@ -60,6 +60,7 @@ function setBlackCheckersOnTop(Locations) {
 }
 function createRowOfSquares(row, Locations) {
 
+    let board = document.getElementById("checkers_board");
     for (let i = 0; i < 8; i++) {
         if (i % 2 !== row % 2) {
             var locationDiv = createLocation((row * 8 + i), "dark");
@@ -69,14 +70,15 @@ function createRowOfSquares(row, Locations) {
             Locations[(row * 8 + i)] = locationDiv;
         }
         
-        document.getElementById("checkers_board").appendChild(locationDiv);
+        board.appendChild(locationDiv);
     }
 }
 function createLocation(id, squareColor) {
     
     var locationDiv = document.createElement("div");
-    if (squareColor === "light") {locationDiv.setAttribute("class", "location lightSquare")}
-    else if (squareColor === "dark") {locationDiv.setAttribute("class", "location darkSquare")}
+    locationDiv.setAttribute("class", `location ${squareColor}Square`)
+    // if (squareColor === "light") {}
+    // else if (squareColor === "dark") {locationDiv.setAttribute("class", "location darkSquare")}
     locationDiv.id = id; 
     locationDiv.occupant = null;
     locationDiv.onPath = false;

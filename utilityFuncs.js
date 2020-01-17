@@ -8,9 +8,10 @@ Checker.prototype.isDifferentColor = function (otherChecker) {
 function clearPaths () {    
     for (let i = 1; i < 64; i++)
     {
-       if (document.getElementById(i).onPath) {
-            document.getElementById(i).onPath = false;
-            document.getElementById(i).setAttribute("class", "location darkSquare")
+        let location = document.getElementById(i);
+       if (location.onPath) {
+            location.onPath = false;
+            location.setAttribute("class", "location darkSquare")
         }
     }
 }
@@ -37,7 +38,7 @@ function setMustEat (color) {
         if (checker && checker.color === color) {
             checker.showPaths(false,false);
             if (checker.mustEat === true) {
-                checker.iconImage.setAttribute("class", "must_eat");     
+                checker.iconImage.setAttribute("class", "piece must_eat");    //make an array of object parameters 
             }
         }
     }
@@ -47,7 +48,7 @@ function clearCheckerPropeties (){
     for (let i=0; i < 64; i++) {
         var checker = document.getElementById(i).occupant;
         if (checker) {
-            checker.iconImage.setAttribute("class", "piece_settings");
+            checker.iconImage.setAttribute("class", "piece");
             checker.mustEat = false;
         }
     }

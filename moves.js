@@ -17,7 +17,7 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     if(tryRemoveKilledChecker(thisLocation.id, targetId)) {
         targetLocation.occupant.showPaths(true,true,true);
         if (isPathAvialable()) {
-            this.allowOnlyPathsAndThis();
+            this.allowOnlyPathsAndMe();
             this.isEatingNow = true;
             return true;
         }

@@ -15,7 +15,7 @@ Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = tr
             while (this.showPathOnDirection(directions[i],steps, markPath) && this.rank === QUEEN) {steps++;}
                 
         }       
-        isPath = (this.showKillPathsOnDirection(directions[i],steps, markPath) || isPath);
+        isPath = (this.showKillPathsOnDirection(directions[i], steps, markPath) || isPath);
     } 
     return isPath;
 }
@@ -57,12 +57,13 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, mar
         }
     return pathExists; 
 }
-Checker.prototype.allowOnlyPathsAndThis = function() {
+Checker.prototype.allowOnlyPathsAndMe = function() {
 
     for (let i=0; i < 64; i++) {
-        document.getElementById(i).style.pointerEvents = "none";
-        if (document.getElementById(i).onPath) {
-            document.getElementById(i).style.pointerEvents = "auto";           
+        let location = document.getElementById(i);
+        location.style.pointerEvents = "none";
+        if (location.onPath) {
+            location.style.pointerEvents = "auto";           
         }
     }
     document.getElementById(this.checkerId).style.pointerEvents = "auto"; 
