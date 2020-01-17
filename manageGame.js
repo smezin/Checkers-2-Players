@@ -2,9 +2,6 @@
 const UP_RIGHT = -7, UP_LEFT = -9, DOWN_RIGHT = 9, DOWN_LEFT = 7;
 const WHITE=10, BLACK=-10, PAWN = 1, QUEEN = 2;
 
-function playCheckers (){
-    setGame();    
-}
 function actionSelector (clickedLocationId) {    
     var selectedLocation = document.getElementById(clickedLocationId);
     var checkerLocation = document.getElementById(document.getElementById(clickedLocationId).onPath);    

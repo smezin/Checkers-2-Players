@@ -1,5 +1,5 @@
 
-function setGame() {
+function playCheckers() {
 
     var Locations = [];
     for (let row = 0; row < 8; row++) {
@@ -42,20 +42,20 @@ function getImageByType (checkerType) {
     iconImage.setAttribute("class", "piece_settings");
     return iconImage;
 }
-function setBlackCheckersOnTop(Locations) {
-
-    for (let i = 1; i < 24; i += 2) {
-        Locations[i].occupant = new Checker(i, BLACK, PAWN);
-        if (i === 7) { i--; }
-        if (i === 14) { i++; }
-    }
-}
 function setWhiteCheckersOnBottom(Locations) {
 
     for (let i = 62; i > 39; i -= 2) {
         Locations[i].occupant = new Checker(i, WHITE, PAWN);
         if (i === 56) { i++; }
         if (i === 49) { i--; }
+    }
+}
+function setBlackCheckersOnTop(Locations) {
+
+    for (let i = 1; i < 24; i += 2) {
+        Locations[i].occupant = new Checker(i, BLACK, PAWN);
+        if (i === 7) { i--; }
+        if (i === 14) { i++; }
     }
 }
 function createRowOfSquares(row, Locations) {
@@ -76,11 +76,11 @@ function createLocation(id, squareColor) {
     
     var locationDiv = document.createElement("div");
     if (squareColor === "light") {locationDiv.setAttribute("class", "location lightSquare")}
-    if (squareColor === "dark") {locationDiv.setAttribute("class", "location darkSquare")}
+    else if (squareColor === "dark") {locationDiv.setAttribute("class", "location darkSquare")}
     locationDiv.id = id; 
     locationDiv.occupant = null;
     locationDiv.onPath = false;
     locationDiv.onclick=function()    {actionSelector(id);    }  
-
+    
     return locationDiv;
 }
