@@ -10,7 +10,7 @@ function clearPaths () {
     {
        if (document.getElementById(i).onPath) {
             document.getElementById(i).onPath = false;
-            document.getElementById(i).style.backgroundColor = "peru";
+            document.getElementById(i).setAttribute("class", "location darkSquare")
         }
     }
 }

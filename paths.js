@@ -68,6 +68,6 @@ Checker.prototype.allowOnlyPathsAndThis = function() {
     document.getElementById(this.checkerId).style.pointerEvents = "auto"; 
 }
 function markPath (pathLocation,checkerId) {
-    pathLocation.style.backgroundColor = "saddlebrown";
+    pathLocation.setAttribute("class", "location pathSquare");
     pathLocation.onPath=checkerId;
 }

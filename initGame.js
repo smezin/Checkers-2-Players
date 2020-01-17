@@ -62,10 +62,10 @@ function createRowOfSquares(row, Locations) {
 
     for (let i = 0; i < 8; i++) {
         if (i % 2 !== row % 2) {
-            var locationDiv = createLocation((row * 8 + i), "peru");
+            var locationDiv = createLocation((row * 8 + i), "dark");
             Locations[(row * 8 + i)] = locationDiv;
         } else {
-            var locationDiv = createLocation((row * 8 + i), "beige");
+            var locationDiv = createLocation((row * 8 + i), "light");
             Locations[(row * 8 + i)] = locationDiv;
         }
         
@@ -75,8 +75,8 @@ function createRowOfSquares(row, Locations) {
 function createLocation(id, squareColor) {
     
     var locationDiv = document.createElement("div");
-    locationDiv.setAttribute("class", "locationClass");
-    locationDiv.style.background = squareColor;
+    if (squareColor === "light") {locationDiv.setAttribute("class", "location lightSquare")}
+    if (squareColor === "dark") {locationDiv.setAttribute("class", "location darkSquare")}
     locationDiv.id = id; 
     locationDiv.occupant = null;
     locationDiv.onPath = false;

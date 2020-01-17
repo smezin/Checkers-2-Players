@@ -53,11 +53,19 @@
     margin-left: auto;
     margin-right: auto;
 }
-
  
-.locationClass {
+.location
+ {
     width: 12.5%;
     height: 12.5%;
     float: left;
  }
- 
+ .lightSquare {    
+    background-color: beige;        
+ }
+ .darkSquare {   
+    background-color: peru;    
+ }
+ .pathSquare {    
+    background-color: saddlebrown;    
+ }
