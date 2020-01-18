@@ -59,16 +59,17 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, mar
 }
 Checker.prototype.allowOnlyPathsAndMe = function() {
 
+    var locations = document.getElementById(`checkers_board`).locations;
     for (let i=0; i < 64; i++) {
         let location = document.getElementById(i);
-        location.style.pointerEvents = "none";
+        locations[i].style.pointerEvents = `none`;
         if (location.onPath) {
-            location.style.pointerEvents = "auto";           
+            location.style.pointerEvents = `auto`;           
         }
     }
-    document.getElementById(this.checkerId).style.pointerEvents = "auto"; 
+    document.getElementById(this.checkerId).style.pointerEvents = `auto`; 
 }
 function markPath (pathLocation,checkerId) {
-    pathLocation.setAttribute("class", "location pathSquare");
-    pathLocation.onPath=checkerId;
+    pathLocation.setAttribute(`class`, `location path_square`);
+    pathLocation.onPath = checkerId;
 }

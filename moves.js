@@ -1,5 +1,5 @@
 
-Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
+Checker.prototype.moveCheckerReturnIfConsecutive = function (targetId) {
 
     var thisLocation = document.getElementById(this.checkerId);
     var targetLocation = document.getElementById(targetId);
@@ -14,7 +14,7 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     if (this.checkerType === (WHITE+PAWN) && Math.floor(targetId/8) === 0) {this.coronation();}
     if (this.checkerType === (BLACK+PAWN) && Math.floor(targetId/8) === 7) {this.coronation();}
        
-    if(tryRemoveKilledChecker(thisLocation.id, targetId)) {
+    if(tryRemoveChecker(thisLocation.id, targetId)) {
         targetLocation.occupant.showPaths(true,true,true);
         if (isPathAvialable()) {
             this.allowOnlyPathsAndMe();
@@ -25,9 +25,10 @@ Checker.prototype.moveCheckerReturnIfmoveContinues = function (targetId) {
     clearPaths();
     return false;          
 }
-function tryRemoveKilledChecker(origin, target) {
 
-    var stepRetrace = target-origin;
+function retraceMove(originId, targetId) {
+
+    var stepRetrace = targetId-originId;
     
     if (stepRetrace<0) {
         if (stepRetrace % UP_RIGHT === 0) { 
@@ -45,14 +46,8 @@ function tryRemoveKilledChecker(origin, target) {
                 stepRetrace = DOWN_LEFT;
             }
         }
-    }    
-    var killLocation = document.getElementById(target-stepRetrace);
-    if (killLocation.occupant) {
-        killLocation.occupant = null;       
-        killLocation.removeChild(killLocation.firstChild); 
-        return true;      
-    }
-    return false;
+    }   
+    return (targetId-stepRetrace);
 }
 Checker.prototype.coronation = function() {
 
@@ -60,4 +55,16 @@ Checker.prototype.coronation = function() {
     thisLocation.occupant = null;
     thisLocation.removeChild(thisLocation.firstChild);
     thisLocation.occupant=new Checker (this.checkerId, this.color, QUEEN);
+}
+function tryRemoveChecker (originId, targetId) {
+    var checkerToRemoveLocaionId = retraceMove (originId, targetId);
+    var removeLocation = document.getElementById(checkerToRemoveLocaionId);
+    if (removeLocation.occupant) {
+        removeLocation.occupant = null;       
+        removeLocation.removeChild(removeLocation.firstChild); 
+        updateDrawMovesCount (targetId, true);  
+        return true;      
+    }
+    updateDrawMovesCount (targetId, false);  
+    return false;
 }
