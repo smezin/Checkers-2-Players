@@ -13,7 +13,7 @@ function actionSelector (clickedLocationId) {
             turnIsOverFor(color);
             isGameOver(color); } 
     }
-    else if (`occupant` in selectedLocation) {
+    else if (selectedLocation.occupant) {
         if (selectedLocation.occupant.isEatingNow) {
             selectedLocation.occupant.isEatingNow = !selectedLocation.occupant.isEatingNow;
             clearPaths();
