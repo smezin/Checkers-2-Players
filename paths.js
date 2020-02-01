@@ -72,4 +72,5 @@ Checker.prototype.allowOnlyPathsAndMe = function() {
 function markPath (pathLocation,checkerId) {
     pathLocation.setAttribute(`class`, `location path_square`);
     pathLocation.onPath = checkerId;
+    pathLocation.dropZone = true;
 }

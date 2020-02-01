@@ -26,17 +26,6 @@ function Checker(checkerId, color, rank) {
     this.iconImage = iconImage;  
     checkerBoard.locations[checkerId].appendChild(iconImage);  
     PointerEvent = `none`;
-
-    addEventListener("mousedown", (e) => { onMouseDown(e, item); });
-    //Mouse Move (Under the Page Body since mouse moves right there)
-    document.body.addEventListener("mousemove", (e) => {
-        onMouseMove(e, item);
-    });
-    //Mouse Up 
-    addEventListener("mouseup", (e) => {
-      onMouseUp(e, item);
-    });
-    
 }
 function getImageByType (checkerType) {
 
@@ -97,15 +86,15 @@ function createLocation(id, squareColor) {
     var locationDiv = document.createElement(`div`);
     locationDiv.setAttribute(`class`, `location ${squareColor}_square`)
     locationDiv.id = id; 
-   // locationDiv.draggable = `true`;
+    locationDiv.dropZone = false;
     locationDiv.occupant = null;
     locationDiv.onPath = false;
-    //locationDiv.onclick=function()    {selectAction(id);    }  
-    locationDiv.addEventListener (`click`, selectAction);
-    locationDiv.ondragend = function () {
-        console.log("event " + event.target.x);
-     //   selectAction(event.currentTarget.id);
-    }
+  /*  locationDiv.ondrag = function()    {
+        event.target.style.opacity = "0.8";
+        selectAction(id);    }  */
+    //locationDiv.ondrag = function () {clearPaths();}
+    locationDiv.onmousedown = function () {onmousedown1(event, id);}
+    //locationDiv.draggable = `true`;
     
     return locationDiv;
 }
