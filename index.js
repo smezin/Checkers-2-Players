@@ -9,8 +9,8 @@ function playCheckers() {
     for (let row = 0; row < 8; row++) {
         createRowOfSquares(row, Locations);
     } 
-    setWhiteCheckersOnBottom(Locations);    
-    setBlackCheckersOnTop(Locations);
+    setWhiteCheckers(Locations);    
+    setBlackCheckers(Locations);
     checkerBoard.drawMovesCount = 0;
 }
 function Checker(locationId, color, rank) {
@@ -20,11 +20,12 @@ function Checker(locationId, color, rank) {
     this.color = color;
     this.rank = rank;
     this.checkerType = color + rank;
-    var iconImage = getImageByType(color+rank);  
-    this.iconImage = iconImage;  
     this.mustEat = false;
     this.isEatingNow = false;  
+    var iconImage = getImageByType(color+rank);  
+    this.iconImage = iconImage;  
     checkerBoard.locations[locationId].appendChild(iconImage);  
+    PointerEvent = `none`;
 }
 function getImageByType (checkerType) {
 
@@ -46,17 +47,19 @@ function getImageByType (checkerType) {
             break;    
         }
     iconImage.setAttribute(`class`, `piece`);
+    iconImage.draggable = `auto`;
     return iconImage;
 }
-function setWhiteCheckersOnBottom(Locations) {
+function setWhiteCheckers(Locations) {
 
     for (let i = 62; i > 39; i -= 2) {
         Locations[i].occupant = new Checker(i, WHITE, PAWN);
         if (i === 56) { i++; }
         if (i === 49) { i--; }
+
     }
 }
-function setBlackCheckersOnTop(Locations) {
+function setBlackCheckers(Locations) {
 
     for (let i = 1; i < 24; i += 2) {
         Locations[i].occupant = new Checker(i, BLACK, PAWN);
@@ -85,7 +88,14 @@ function createLocation(id, squareColor) {
     locationDiv.id = id; 
     locationDiv.occupant = null;
     locationDiv.onPath = false;
-    locationDiv.onclick=function()    {actionSelector(id);    }  
+  //  locationDiv.onclick=function()    {selectAction(id);    }  
+    locationDiv.onclick = function () {
+        console.log("down " + event.target);
+        selectAction(id);}
+    locationDiv.ondragend = function () {
+        console.log("event " + event.target.x);
+     //   selectAction(event.currentTarget.id);
+    }
     
     return locationDiv;
 }

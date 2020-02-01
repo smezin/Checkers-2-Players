@@ -1,7 +1,7 @@
 
-function actionSelector (clickedLocationId) {    
+function selectAction (clickedLocationId) {    
     var selectedLocation = document.getElementById(clickedLocationId);    
-     
+    //console.log("SA " + clickedLocationId) ;
     clearCheckerPropeties();
 
     if (selectedLocation.onPath){   
