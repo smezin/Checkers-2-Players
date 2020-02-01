@@ -13,19 +13,30 @@ function playCheckers() {
     setBlackCheckers(Locations);
     checkerBoard.drawMovesCount = 0;
 }
-function Checker(locationId, color, rank) {
+function Checker(checkerId, color, rank) {
 
     var checkerBoard = document.getElementById(`checkers_board`);
-    this.checkerId = locationId;
+    var iconImage = getImageByType(color+rank); 
+    this.checkerId = checkerId;
     this.color = color;
     this.rank = rank;
     this.checkerType = color + rank;
     this.mustEat = false;
-    this.isEatingNow = false;  
-    var iconImage = getImageByType(color+rank);  
+    this.isEatingNow = false;      
     this.iconImage = iconImage;  
-    checkerBoard.locations[locationId].appendChild(iconImage);  
+    checkerBoard.locations[checkerId].appendChild(iconImage);  
     PointerEvent = `none`;
+
+    addEventListener("mousedown", (e) => { onMouseDown(e, item); });
+    //Mouse Move (Under the Page Body since mouse moves right there)
+    document.body.addEventListener("mousemove", (e) => {
+        onMouseMove(e, item);
+    });
+    //Mouse Up 
+    addEventListener("mouseup", (e) => {
+      onMouseUp(e, item);
+    });
+    
 }
 function getImageByType (checkerType) {
 
@@ -86,12 +97,11 @@ function createLocation(id, squareColor) {
     var locationDiv = document.createElement(`div`);
     locationDiv.setAttribute(`class`, `location ${squareColor}_square`)
     locationDiv.id = id; 
+   // locationDiv.draggable = `true`;
     locationDiv.occupant = null;
     locationDiv.onPath = false;
-  //  locationDiv.onclick=function()    {selectAction(id);    }  
-    locationDiv.onclick = function () {
-        console.log("down " + event.target);
-        selectAction(id);}
+    //locationDiv.onclick=function()    {selectAction(id);    }  
+    locationDiv.addEventListener (`click`, selectAction);
     locationDiv.ondragend = function () {
         console.log("event " + event.target.x);
      //   selectAction(event.currentTarget.id);
