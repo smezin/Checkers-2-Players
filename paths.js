@@ -26,10 +26,12 @@ Checker.prototype.showPathOnDirection = function (direction, steps = 1, markTheP
         return false;
     }        
     var targetLocaion = document.getElementById(baseLocationId+direction*steps);
-    if(!(targetLocaion.occupant)) {
-        if (markThePath) {markPath(targetLocaion,this.checkerId);}
-        return true;
-    } 
+    if (targetLocaion != null) {
+        if(!(targetLocaion.occupant)) {
+            if (markThePath) {markPath(targetLocaion,this.checkerId);}
+            return true;
+        } 
+    }
     return false;      
 }
 Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, markThePath = true) {
@@ -44,7 +46,7 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, mar
     var opponentLocation = document.getElementById(baseLocationId + direction);
     var targetLocation = document.getElementById(baseLocationId + direction*2); 
     var validOppenent;
-    if (opponentLocation.occupant && this.isDifferentColor(opponentLocation.occupant)) {
+    if (opponentLocation != null && opponentLocation.occupant && this.isDifferentColor(opponentLocation.occupant)) {
         validOppenent = true;
     }
     if(validOppenent && targetLocation.occupant === null) {
@@ -72,5 +74,4 @@ Checker.prototype.allowOnlyPathsAndMe = function() {
 function markPath (pathLocation,checkerId) {
     pathLocation.setAttribute(`class`, `location path_square`);
     pathLocation.onPath = checkerId;
-    pathLocation.dropZone = true;
 }

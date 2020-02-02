@@ -11,7 +11,6 @@ function clearPaths () {
         let location = locations[i];
         if (location.onPath) {
             location.onPath = false;
-            location.dropZone = false;
             location.setAttribute(`class`, `location dark_square`)
         }
     }

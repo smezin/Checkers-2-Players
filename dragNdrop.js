@@ -1,71 +1,64 @@
 
-onmousedown1 = function(event, id) { // (1) start the process
+onmousedown1 = function(event, id) { 
+    selectAction(id);
+    let checker = document.getElementById(id).firstChild;
+    if (checker == null) {
+      return;
+    }  
+    checker.ondragstart = function() {   //Disable default behavior
+      return false;
+    };
 
-  let ball = document.getElementById(id).firstChild;
-  let currentDroppable = null;
-  ball.ondragstart = function() {
-    return false;
-  };
-  ball.setAttribute(`class`, `piece1`);
-  let shiftX = event.clientX - ball.getBoundingClientRect().left;
-  let shiftY = event.clientY - ball.getBoundingClientRect().top;
+    checker.id = id;
+    checker.setAttribute(`class`, `piece`);
+    let shiftX = event.clientX - checker.getBoundingClientRect().left;
+    let shiftY = event.clientY - checker.getBoundingClientRect().top;
+    
+    checker.style.position = 'absolute';
+    checker.style.zIndex = 1000;
+    document.body.append(checker);
 
-  ball.style.position = 'absolute';
-  ball.style.zIndex = 1000;
-  document.body.append(ball);
-
-  moveAt(event.pageX, event.pageY);
-
-  // moves the ball at (pageX, pageY) coordinates
-  // taking initial shifts into account
-  function moveAt(pageX, pageY) {
-    ball.style.left = pageX - shiftX + 'px';
-    ball.style.top = pageY - shiftY + 'px';
-  }
-/*
-  function onMouseMove(event) {
     moveAt(event.pageX, event.pageY);
-  }
-*/
+
+    function moveAt(pageX, pageY) {
+      checker.style.left = pageX - shiftX + 'px';     // moves the checker at (pageX, pageY) coordinates
+      checker.style.top = pageY - shiftY + 'px';      // taking initial shifts into account
+    }
+
 function onMouseMove(event) {
   moveAt(event.pageX, event.pageY);
 
-  ball.hidden = true;
+  checker.hidden = true;
   let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
-  ball.hidden = false;
-
-  // mousemove events may trigger out of the window (when the ball is dragged off-screen)
-  // if clientX/clientY are out of the window, then elementFromPoint returns null
+  checker.hidden = false;
+  let board = document.getElementById(`checkers_board`);
+  board.hoveringOverId = elemBelow.id;
+  console.log(board.hoveringOverId);
   if (!elemBelow) return;
-
-  // potential droppables are labeled with the class "droppable" (can be other logic)
-  let droppableBelow = elemBelow.closest('.droppable');
-  console.log(elemBelow.id);
-  if (currentDroppable != droppableBelow) {
-    // we're flying in or out...
-    // note: both values can be null
-    //   currentDroppable=null if we were not over a droppable before this event (e.g over an empty space)
-    //   droppableBelow=null if we're not over a droppable now, during this event
-
-    if (currentDroppable) {
-      // the logic to process "flying out" of the droppable (remove highlight)
-      leaveDroppable(currentDroppable);
-    }
-    currentDroppable = droppableBelow;
-    if (currentDroppable) {
-      // the logic to process "flying in" of the droppable
-      enterDroppable(currentDroppable);
-    }
-  }
 }
-  // move the ball on mousemove
+
+  // move the checker on mousemove
   document.addEventListener('mousemove', onMouseMove);
 
-  // drop the ball, remove unneeded handlers
-  ball.onmouseup = function() {
-    document.removeEventListener('mousemove', onMouseMove);
-    ball.onmouseup = null;
-  };
+  // drop the checker, remove unneeded handlers
+checker.onmouseup = function() {
 
+  
+  console.log(checker.id);
+  checker.parentElement.removeChild(checker);
+  checker.style.left = `auto`;
+  checker.style.top = `auto`;
+  document.getElementById(checker.id).appendChild(checker);
+  let board = document.getElementById(`checkers_board`);
+  
+  console.log(`landing on `, board.hoveringOverId);
+  if (board.hoveringOverId != null && board.hoveringOverId)
+    if (board.hoveringOverId != checker.id)
+      selectAction(board.hoveringOverId);
+
+    document.removeEventListener('mousemove', onMouseMove);
+    checker.onmouseup = null;
+  
+  };
 };
 

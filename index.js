@@ -89,12 +89,8 @@ function createLocation(id, squareColor) {
     locationDiv.dropZone = false;
     locationDiv.occupant = null;
     locationDiv.onPath = false;
-  /*  locationDiv.ondrag = function()    {
-        event.target.style.opacity = "0.8";
-        selectAction(id);    }  */
-    //locationDiv.ondrag = function () {clearPaths();}
+    //locationDiv.onclick = function () {selectAction(id);}
     locationDiv.onmousedown = function () {onmousedown1(event, id);}
-    //locationDiv.draggable = `true`;
-    
+   
     return locationDiv;
 }

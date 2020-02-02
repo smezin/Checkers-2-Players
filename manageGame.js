@@ -1,7 +1,6 @@
 
 function selectAction (clickedLocationId) {    
     var selectedLocation = document.getElementById(clickedLocationId);    
-    //console.log("SA " + clickedLocationId) ;
     clearCheckerPropeties();
 
     if (selectedLocation.onPath){   
@@ -45,7 +44,7 @@ function turnIsOverFor (color) {
         var checker = location.occupant;
         location.style.pointerEvents = `auto`;
         if (checker && (checker.color === color)) {
-            location.style.pointerEvents = `none`;
+            location.style.pointerEvents = `none`;            
         }
     }
     setMustEat (-color);
