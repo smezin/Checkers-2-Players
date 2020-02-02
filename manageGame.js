@@ -7,7 +7,7 @@ function selectAction (clickedLocationId) {
         var checkerLocation = document.getElementById(selectedLocation.onPath);    
         var color = checkerLocation.occupant.color;       
         if (checkerLocation.occupant.moveCheckerReturnIfConsecutive(clickedLocationId)){ 
-            selectedLocation.occupant.iconImage.setAttribute(`class`, `piece picked`);   
+          //  selectedLocation.occupant.iconImage.setAttribute(`class`, `piece picked`);   
         } else { 
             turnIsOverFor(color);
             isGameOver(color); } 
@@ -18,8 +18,9 @@ function selectAction (clickedLocationId) {
             clearPaths();
             turnIsOverFor(selectedLocation.occupant.color);             
         } else {
-        selectedLocation.occupant.iconImage.setAttribute(`class`, `piece picked`);
-        selectedLocation.occupant.showPaths();         
+        //selectedLocation.occupant.iconImage.setAttribute(`class`, `piece picked`);
+        selectedLocation.occupant.showPaths();
+        console.log('hiiii')         ;
         }
     } else {
         clearPaths();

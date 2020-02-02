@@ -55,5 +55,5 @@ function clearCheckerPropeties (){
     }
 }
 function isOutOfBoard (id) {
-    return (id < 0 || id > 63);
+    return (id < 0 || id > 63); 
 }

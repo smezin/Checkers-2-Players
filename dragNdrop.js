@@ -10,7 +10,8 @@ onmousedown1 = function(event, id) {
     };
 
     checker.id = id;
-    checker.setAttribute(`class`, `piece`);
+    console.log(`picking: `, id);
+    checker.setAttribute(`class`, `piece picked`);
     let shiftX = event.clientX - checker.getBoundingClientRect().left;
     let shiftY = event.clientY - checker.getBoundingClientRect().top;
     
@@ -31,6 +32,7 @@ function onMouseMove(event) {
   checker.hidden = true;
   let elemBelow = document.elementFromPoint(event.clientX, event.clientY);
   checker.hidden = false;
+  
   let board = document.getElementById(`checkers_board`);
   board.hoveringOverId = elemBelow.id;
   console.log(board.hoveringOverId);
@@ -41,23 +43,24 @@ function onMouseMove(event) {
   document.addEventListener('mousemove', onMouseMove);
 
   // drop the checker, remove unneeded handlers
-checker.onmouseup = function() {
-
-  
+checker.onmouseup = function() {  
   console.log(checker.id);
   checker.parentElement.removeChild(checker);
   checker.style.left = `auto`;
   checker.style.top = `auto`;
+  checker.setAttribute(`class`, `piece`);
   document.getElementById(checker.id).appendChild(checker);
   let board = document.getElementById(`checkers_board`);
   
   console.log(`landing on `, board.hoveringOverId);
-  if (board.hoveringOverId != null && board.hoveringOverId)
-    if (board.hoveringOverId != checker.id)
+  if (board.hoveringOverId != null && board.hoveringOverId) 
+    if (board.hoveringOverId != checker.id) 
       selectAction(board.hoveringOverId);
+  
 
-    document.removeEventListener('mousemove', onMouseMove);
-    checker.onmouseup = null;
+  clearPaths();
+  document.removeEventListener('mousemove', onMouseMove);
+  checker.onmouseup = null;
   
   };
 };
