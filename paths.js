@@ -1,6 +1,7 @@
 
 Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = true, eatsNow = false) {
     clearPaths();
+    
     var isPath = false;
     if (this.rank === PAWN && !eatsNow){
         var moveRight = (this.color === WHITE)?UP_RIGHT:DOWN_RIGHT;
@@ -19,14 +20,15 @@ Checker.prototype.showPaths = function (showOnlyKillPaths = false, markPath = tr
     } 
     return isPath;
 }
-Checker.prototype.showPathOnDirection = function (direction, steps = 1, markThePath = true) {
-
-    var baseLocationId = this.checkerId;
-    if (isOutOfBoard(baseLocationId+direction*steps) || isWrapViolation(baseLocationId, direction, steps)) {
-        return false;
-    }        
-    var targetLocaion = document.getElementById(baseLocationId+direction*steps);
+Checker.prototype.showPathOnDirection = function (direction, steps = 1, markThePath = true) {    
+    
+    let targetId = eval(this.checkerId+direction*steps);
+    if (isOutOfBoard(targetId) || isWrapViolation(this.checkerId, direction, steps)) {
+        return false;        
+    }  
+    var targetLocaion = document.getElementById(targetId);
     if (targetLocaion != null) {
+
         if(!(targetLocaion.occupant)) {
             if (markThePath) {markPath(targetLocaion,this.checkerId);}
             return true;
@@ -38,7 +40,7 @@ Checker.prototype.showKillPathsOnDirection = function (direction, steps = 1, mar
 
     var pathExists = false;
     var baseLocationId = this.checkerId + ((steps-1)*direction);
-
+   
     if (isOutOfBoard(baseLocationId + 2*direction) || isWrapViolation(baseLocationId, direction) 
     || isWrapViolation(baseLocationId, direction, 2)){
         return false;
@@ -74,4 +76,5 @@ Checker.prototype.allowOnlyPathsAndMe = function() {
 function markPath (pathLocation,checkerId) {
     pathLocation.setAttribute(`class`, `location path_square`);
     pathLocation.onPath = checkerId;
+    console.log(`path on: `,pathLocation.id );
 }

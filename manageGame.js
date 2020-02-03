@@ -1,13 +1,11 @@
-
 function selectAction (clickedLocationId) {    
     var selectedLocation = document.getElementById(clickedLocationId);    
     clearCheckerPropeties();
-
-    if (selectedLocation.onPath){   
+    
+    if (selectAction && selectedLocation.onPath){   
         var checkerLocation = document.getElementById(selectedLocation.onPath);    
         var color = checkerLocation.occupant.color;       
         if (checkerLocation.occupant.moveCheckerReturnIfConsecutive(clickedLocationId)){ 
-          //  selectedLocation.occupant.iconImage.setAttribute(`class`, `piece picked`);   
         } else { 
             turnIsOverFor(color);
             isGameOver(color); } 
@@ -18,9 +16,7 @@ function selectAction (clickedLocationId) {
             clearPaths();
             turnIsOverFor(selectedLocation.occupant.color);             
         } else {
-        //selectedLocation.occupant.iconImage.setAttribute(`class`, `piece picked`);
         selectedLocation.occupant.showPaths();
-        console.log('hiiii')         ;
         }
     } else {
         clearPaths();
@@ -39,13 +35,13 @@ function updateDrawMovesCount (checkerId, didEat) {
 }
 function turnIsOverFor (color) {
 
-    for (let i=0; i < 64; i++)
+    for (let i=0; i < 64; i++) 
     {   
-        var location = document.getElementById(i);
-        var checker = location.occupant;
+        var location = document.getElementById(i);        
         location.style.pointerEvents = `auto`;
+        var checker = location.occupant;
         if (checker && (checker.color === color)) {
-            location.style.pointerEvents = `none`;            
+            location.style.pointerEvents = `none`;   
         }
     }
     setMustEat (-color);
