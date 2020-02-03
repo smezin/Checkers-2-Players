@@ -37,6 +37,8 @@
     
     width: 60px;
     height: 60px;
+    left: auto;
+    top: auto;
     margin-left: auto;
     margin-right: auto;
 }
